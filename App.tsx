@@ -15,7 +15,7 @@ const App: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const managerRef = useRef<SceneManager | null>(null);
   
-  const [activeEffect, setActiveEffect] = useState<EffectType>(EffectType.GALAXY);
+  const [activeEffect, setActiveEffect] = useState<EffectType>(EffectType.CREATIVE_HEART_FIREWORK);
   const [config, setConfig] = useState<EffectConfig>(DEFAULT_CONFIG);
   const [explanation, setExplanation] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -91,7 +91,7 @@ const App: React.FC = () => {
       </button>
 
       {/* Sliding Sidebar Container */}
-      <div className={`fixed inset-y-0 left-0 z-20 w-full md:w-80 transform transition-transform duration-300 ease-in-out ${showControls ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-20 w-full md:w-60 transform transition-transform duration-300 ease-in-out ${showControls ? 'translate-x-0' : '-translate-x-full'}`}>
          <Controls 
             activeEffect={activeEffect}
             config={config}

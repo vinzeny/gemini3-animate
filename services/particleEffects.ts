@@ -5,6 +5,7 @@ import { EffectType, EffectConfig } from '../types';
 const textureLoader = new THREE.TextureLoader();
 const particleTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/disc.png');
 const snowflakeTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/snowflake1.png');
+const GALAXY_ROTATION_RATE = 0.002;
 
 export class SceneManager {
   private scene: THREE.Scene;
@@ -400,7 +401,7 @@ export class SceneManager {
            col[i3 + 2] += (colorText.b - col[i3 + 2]) * 0.05;
          }
        } else { // Galaxy
-         currentRotationY += config.speed * 0.002;
+        currentRotationY += config.speed * GALAXY_ROTATION_RATE;
          this.particles.rotation.y = currentRotationY;
          const baseColor = new THREE.Color(config.color);
          
@@ -543,10 +544,10 @@ export class SceneManager {
                 pos[i3] += explosionVelocities[i3];
                 pos[i3 + 1] += explosionVelocities[i3 + 1];
                 pos[i3 + 2] += explosionVelocities[i3 + 2];
-                explosionVelocities[i3 + 1] -= 0.02; 
-                explosionVelocities[i3] *= 0.98;
-                explosionVelocities[i3+1] *= 0.98;
-                explosionVelocities[i3+2] *= 0.98;
+                explosionVelocities[i3 + 1] -= 0.01; 
+                explosionVelocities[i3] *= 0.99;
+                explosionVelocities[i3+1] *= 0.99;
+                explosionVelocities[i3+2] *= 0.99;
 
                 if (pos[i3 + 1] < -100 && this.handStateIsActive) {
                     pos[i3] = (Math.random() - 0.5) * 2;
@@ -567,27 +568,45 @@ export class SceneManager {
       const count = config.count;
       const geometry = new THREE.BufferGeometry();
       const positions = new Float32Array(count * 3);
-      const velocities = new Float32Array(count); // For rain
       const colors = new Float32Array(count * 3);
+      const galaxyPositions = new Float32Array(count * 3);
+      const galaxyColors = new Float32Array(count * 3);
+      const colorInside = new THREE.Color(config.color);
+      const colorOutside = new THREE.Color(0x1b3984); 
       
-      // Rain Positions (Default)
       for (let i = 0; i < count; i++) {
           const i3 = i * 3;
-          positions[i3] = (Math.random() - 0.5) * 200;
-          positions[i3 + 1] = (Math.random() - 0.5) * 200;
-          positions[i3 + 2] = (Math.random() - 0.5) * 200;
-          velocities[i] = Math.random() * 0.5 + 0.5;
-          colors[i3] = 1; colors[i3+1] = 1; colors[i3+2] = 1; // White rain
+          const radius = Math.random() * 50;
+          const spinAngle = radius * 0.5;
+          const branchAngle = (i % 3) * ((Math.PI * 2) / 3);
+          const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * (0.5 * radius);
+          const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * (0.5 * radius);
+          const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * (0.5 * radius);
+
+          galaxyPositions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+          galaxyPositions[i3 + 1] = randomY;
+          galaxyPositions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+          const mixedColor = colorInside.clone().lerp(colorOutside, radius / 50);
+          galaxyColors[i3] = mixedColor.r;
+          galaxyColors[i3 + 1] = mixedColor.g;
+          galaxyColors[i3 + 2] = mixedColor.b;
+
+          positions[i3] = galaxyPositions[i3];
+          positions[i3 + 1] = galaxyPositions[i3 + 1];
+          positions[i3 + 2] = galaxyPositions[i3 + 2];
+          colors[i3] = galaxyColors[i3];
+          colors[i3 + 1] = galaxyColors[i3 + 1];
+          colors[i3 + 2] = galaxyColors[i3 + 2];
       }
 
       // Cake + Text Target Positions
       const cakePositions = new Float32Array(count * 3);
       const cakeColors = new Float32Array(count * 3);
-      const textPositions = this.generateCanvasPositions("生日快乐", count / 4); // Use subset for text
+      const textPositions = this.generateCanvasPositions("天天开心~", count / 4); // Use subset for text
       
       const cakeColor1 = new THREE.Color(0xFF69B4); // Pink
-      const cakeColor2 = new THREE.Color(0xFFFFFF); // Cream
-      const flameColor = new THREE.Color(0xFFA500); // Orange
+      const cakeColor2 = new THREE.Color(0x87CEEB); // Sky blue
 
       // Build Cake Geometry target
       let idx = 0;
@@ -638,7 +657,7 @@ export class SceneManager {
           const i3 = idx * 3;
           const tIdx = (i % (textPositions.length/3)) * 3;
           cakePositions[i3] = textPositions[tIdx];
-          cakePositions[i3+1] = textPositions[tIdx+1] - 40; // Shift down
+          cakePositions[i3+1] = textPositions[tIdx+1] - 60; // Shift further down
           cakePositions[i3+2] = textPositions[tIdx+2];
           cakeColors[i3] = 1; cakeColors[i3+1] = 1; cakeColors[i3+2] = 0; // Yellow Text
           idx++;
@@ -662,6 +681,7 @@ export class SceneManager {
       this.scene.add(this.particles);
 
       let isCatDetected = false;
+      let galaxyRotation = 0;
 
       this.updateCallback = (time) => {
           if (!this.particles) return;
@@ -715,22 +735,17 @@ export class SceneManager {
                }
 
           } else {
-              // --- RAIN MODE ---
-              this.particles.rotation.y = 0;
-              for(let i = 0; i < count; i++) {
-                const i3 = i * 3;
-                // Gravity
-                pos[i3 + 1] -= velocities[i] * config.speed;
-                // Reset
-                if (pos[i3 + 1] < -100) {
-                    pos[i3] = (Math.random() - 0.5) * 200;
-                    pos[i3 + 1] = 100;
-                    pos[i3 + 2] = (Math.random() - 0.5) * 200;
-                }
-                // Color White
-                col[i3] += (1 - col[i3]) * 0.1;
-                col[i3+1] += (1 - col[i3+1]) * 0.1;
-                col[i3+2] += (1 - col[i3+2]) * 0.1;
+              galaxyRotation += config.speed * GALAXY_ROTATION_RATE;
+              this.particles.rotation.y = galaxyRotation;
+              for (let i = 0; i < count; i++) {
+                  const i3 = i * 3;
+                  pos[i3] += (galaxyPositions[i3] - pos[i3]) * 0.05;
+                  pos[i3 + 1] += (galaxyPositions[i3 + 1] - pos[i3 + 1]) * 0.05;
+                  pos[i3 + 2] += (galaxyPositions[i3 + 2] - pos[i3 + 2]) * 0.05;
+
+                  col[i3] += (galaxyColors[i3] - col[i3]) * 0.05;
+                  col[i3 + 1] += (galaxyColors[i3 + 1] - col[i3 + 1]) * 0.05;
+                  col[i3 + 2] += (galaxyColors[i3 + 2] - col[i3 + 2]) * 0.05;
               }
           }
           

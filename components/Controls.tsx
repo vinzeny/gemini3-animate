@@ -21,9 +21,9 @@ const BASIC_EFFECTS: Record<string, string> = {
 };
 
 const CREATIVE_EFFECTS: Record<string, string> = {
-  [EffectType.CREATIVE_TEXT]: '手势文字 (✌️ 比耶)',
-  [EffectType.CREATIVE_HEART_FIREWORK]: '爱心烟花 (✊ 握拳)',
-  [EffectType.CREATIVE_CAT_CAKE]: '生日蛋糕 (🐱 猫咪)'
+  [EffectType.CREATIVE_TEXT]: '✌️ 比耶',
+  [EffectType.CREATIVE_HEART_FIREWORK]: '✊ 握拳',
+  [EffectType.CREATIVE_CAT_CAKE]: '🐱 猫咪'
 };
 
 const Controls: React.FC<ControlsProps> = ({ 
@@ -256,10 +256,10 @@ const Controls: React.FC<ControlsProps> = ({
   }, [activeEffect, onHandStateChange]);
 
   return (
-    <div className="h-full w-full bg-black/90 backdrop-blur-md text-white p-6 border-r border-white/10 flex flex-col gap-6 overflow-y-auto">
+    <div className="w-full bg-black/10 backdrop-blur-md text-white p-2 border-r border-white/10 rounded-lg flex flex-col gap-6 overflow-y-auto">
       
       {/* Header Controls */}
-      <div className="flex justify-end items-center">
+      {/* <div className="flex justify-end items-center">
         <button 
           onClick={onClose}
           className="p-1 hover:bg-white/10 rounded-full transition-colors"
@@ -269,11 +269,11 @@ const Controls: React.FC<ControlsProps> = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-      </div>
+      </div> */}
 
       {/* Camera View (Only for Creative Mode) */}
       {(activeEffect === EffectType.CREATIVE_TEXT || activeEffect === EffectType.CREATIVE_HEART_FIREWORK || activeEffect === EffectType.CREATIVE_CAT_CAKE) && (
-        <div className="relative w-full aspect-[4/3] bg-black rounded-lg overflow-hidden border border-white/20">
+        <div className="relative w-full aspect-[6/3] bg-black rounded-lg overflow-hidden border border-white/20">
            <video 
              ref={videoRef} 
              className="absolute inset-0 w-full h-full object-cover transform -scale-x-100" 
@@ -287,9 +287,9 @@ const Controls: React.FC<ControlsProps> = ({
              width={320}
              height={240}
            />
-           <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-green-400 font-mono">
+           {/* <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-green-400 font-mono">
              {detectionLabel}
-           </div>
+           </div> */}
            {!isCameraActive && (
              <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500">
                正在启动摄像头/模型...
@@ -299,7 +299,7 @@ const Controls: React.FC<ControlsProps> = ({
       )}
 
       {/* Effect Selectors */}
-      <div className="flex flex-col gap-2">
+      {/* <div className="flex flex-col gap-2">
         <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">基础特效</label>
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(BASIC_EFFECTS).map(([type, name]) => (
@@ -316,9 +316,9 @@ const Controls: React.FC<ControlsProps> = ({
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
-      <div className="flex flex-col gap-2">
+      {/* <div className="flex flex-col gap-2">
         <label className="text-xs font-semibold uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">创意类型 (AI识别)</label>
         <div className="grid grid-cols-1 gap-2">
           {Object.entries(CREATIVE_EFFECTS).map(([type, name]) => (
@@ -340,10 +340,10 @@ const Controls: React.FC<ControlsProps> = ({
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* AI Explanation */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+      {/* <div className="bg-white/5 border border-white/10 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
            <svg className="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm1-13h-2v6h6v-2h-4z"/></svg>
            <span className="text-xs font-semibold uppercase tracking-wider text-purple-400">AI 解析 (Gemini)</span>
@@ -351,10 +351,10 @@ const Controls: React.FC<ControlsProps> = ({
         <p className={`text-sm leading-relaxed text-gray-300 ${isLoading ? 'animate-pulse' : ''}`}>
           {isLoading ? '正在生成解释...' : explanation}
         </p>
-      </div>
+      </div> */}
 
       {/* Parameters */}
-      <div className="flex flex-col gap-4">
+      {/* <div className="flex flex-col gap-4">
         <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">参数设置</label>
         
         <div className="space-y-1">
@@ -416,7 +416,7 @@ const Controls: React.FC<ControlsProps> = ({
             className="w-full h-8 rounded cursor-pointer bg-transparent border-0"
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
