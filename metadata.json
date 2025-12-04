@@ -1,0 +1,7 @@
+{
+  "name": "Three.js 粒子特效展示",
+  "description": "使用 Three.js 展示 3D 粒子特效，并由 AI 讲解其背后的数学和逻辑原理。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
